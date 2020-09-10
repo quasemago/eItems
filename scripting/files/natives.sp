@@ -252,7 +252,6 @@ public int Native_AreItemsSyncing(Handle plugin, int numParams)
 
 public int Native_ReSync(Handle hPlugin, int iNumParams)
 {
-    CheckHibernation();
     ParseItems();
     return true;
 }

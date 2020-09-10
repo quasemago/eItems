@@ -1,36 +1,11 @@
 public void ParseItems()
 {
-    char szFileToDownload[24];
-    if(StrEqual(g_szLanguageCode, "en", false))
-    {
-        Format(szFileToDownload, sizeof(szFileToDownload), "items.json");
-    }
-    else
-    {
-       Format(szFileToDownload, sizeof(szFileToDownload), "items_%s.json", g_szLanguageCode);
-    }
-
-    PrintToServer("%s Downloading eItems data from API", TAG_NCLR);
-    HTTPClient httpClient = new HTTPClient("https://api.hexa-core.eu/plugins/eitems");
-    httpClient.SetHeader("User-Agent", "eItems HTTP Client 1.0 (730)");
-    httpClient.Get(szFileToDownload, PraseItemsDownloaded);
+    RequestFrame(Frame_ParseItems);
 }
 
-public void PraseItemsDownloaded(HTTPResponse response, any value)
+public void Frame_ParseItems(any data)
 {
-    if (response.Status != HTTPStatus_OK)
-    {
-        PrintToServer("%s Downloading eItems data from API failed! Local backup will be used instead!", TAG_NCLR);
-        LoadBackup();
-        return;
-    }
-    if (response.Data == null)
-    {
-        PrintToServer("%s Downloading eItems data from API failed! Local backup will be used instead!", TAG_NCLR);
-        LoadBackup();
-        return;
-    }
-    PrintToServer("%s eItems data for '%s' language downloaded successfully", TAG_NCLR, g_szLanguageCode);
+    PrintToServer("%s Loading eItems data from local backup!", TAG_NCLR);
     LoadBackup();
 }
 
@@ -132,7 +107,6 @@ public void ParseData(JSONObject jRoot)
 
     Call_StartForward(g_OnItemsSynced);
     Call_Finish(g_OnItemsSynced);
-    CheckHibernation(true);
 }
 
 public void ParseWeapons(JSONArray array)

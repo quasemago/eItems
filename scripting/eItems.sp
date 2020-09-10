@@ -64,11 +64,6 @@ public void OnPluginStart()
     g_arStickersNum         = new ArrayList();
     g_smStickersSets        = new StringMap();
     g_smStickersInfo        = new StringMap();
-    
-    g_cvHibernationWhenEmpty    = FindConVar("sv_hibernate_when_empty");
-    g_iHibernateWhenEmpty       = g_cvHibernationWhenEmpty.IntValue;
-
-    CheckHibernation();
 
     char szLocalFileFolder[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szLocalFileFolder, sizeof(szLocalFileFolder), "data/eItems");
@@ -82,7 +77,6 @@ public void OnPluginStart()
     }
 
     LoadConfig();
-    ParseItems();
 
     HookEvent("player_death",       Event_PlayerDeath);
     HookEvent("round_poststart",    Event_OnRoundStart);
@@ -128,6 +122,11 @@ public void OnPluginEnd()
     delete g_arStickersNum;
     delete g_smStickersSets;
     delete g_smStickersInfo;
+}
+
+public void OnAllPluginsLoaded()
+{
+    ParseItems();
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -180,21 +179,4 @@ public Action OnNormalSoundPlayed(int clients[64], int &iNumClients, char szSamp
         }
     }
     return Plugin_Continue;
-}
-
-stock void CheckHibernation(bool bToDefault = false)
-{
-    if(g_iHibernateWhenEmpty == 0)
-    {
-        return;
-    }
-    if(bToDefault)
-    {
-        PrintToServer("%s Hibernation returned back to default", TAG_NCLR);
-        g_cvHibernationWhenEmpty.SetInt(g_iHibernateWhenEmpty);
-        return;
-    }
-
-    PrintToServer("%s Hibernation disabled", TAG_NCLR);
-    g_cvHibernationWhenEmpty.SetInt(0);
 }

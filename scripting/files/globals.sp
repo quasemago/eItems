@@ -1,6 +1,3 @@
-ConVar g_cvHibernationWhenEmpty;
-int g_iHibernateWhenEmpty = 0;
-
 enum struct eSkinInfo
 {
     int SkinNum;
