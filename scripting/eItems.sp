@@ -4,12 +4,14 @@
 #include <ripext>
 #include <eItems>
 
-#pragma newdecls required
 #pragma semicolon 1
+
+new String:mapname[64];
+new MapIsReloading;
 
 #define TAG_NCLR "[eItems]"
 #define AUTHOR "ESK0 (Original author: SM9)"
-#define VERSION "0.10_noapi"
+#define VERSION "0.10"
 
 #include "files/globals.sp"
 #include "files/client.sp"
@@ -129,6 +131,29 @@ public void OnPluginEnd()
     delete g_smStickersSets;
     delete g_smStickersInfo;
 }
+
+public OnMapStart()
+{
+    HookEvent("player_disconnect", PlayerDisconnected,EventHookMode_Post);
+    GetCurrentMap(mapname, sizeof(mapname));
+    MapIsReloading = 0;
+}
+
+public Action:PlayerDisconnected(Handle:event, const String:name[], bool:dontBroadcast)
+{
+    decl String:s_reason[256];
+    GetEventString(event,"reason", s_reason, sizeof(s_reason));
+    if(StrContains(s_reason, "Punting bot", false) != -1)
+    {
+        if(GetClientCount() < 2 && MapIsReloading == 0)
+        {
+            ForceChangeLevel(mapname,"Restarting map");
+            LogMessage("Restarting map");
+            MapIsReloading = 1;
+        }
+    }
+    return Plugin_Continue;
+} 
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
